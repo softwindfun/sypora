@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go mod *)",
+      "Bash(where go *)",
+      "Bash(go run *)",
+      "Bash(powershell *)",
+      "Read(//c/Program Files/Go/bin/**)",
+      "Read(//c/Program Files \\(x86\\)/Go/bin/**)",
+      "Bash(where.exe go *)",
+      "Read(//c/Users/developer/go/bin/**)",
+      "Read(//c/Go/bin/**)"
+    ]
+  }
+}
