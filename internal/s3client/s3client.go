@@ -3,7 +3,6 @@ package s3client
 import (
 	"context"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"time"
@@ -75,22 +74,6 @@ func (c *Client) Download(remoteKey, localPath string) error {
 		return fmt.Errorf("download %s: %w", remoteKey, err)
 	}
 	return nil
-}
-
-func (c *Client) DownloadToWriter(remoteKey string, w io.WriterAt) (int64, error) {
-	ctx := context.Background()
-
-	obj, err := c.mc.GetObject(ctx, c.bucket, remoteKey, minio.GetObjectOptions{})
-	if err != nil {
-		return 0, fmt.Errorf("get object %s: %w", remoteKey, err)
-	}
-	defer obj.Close()
-
-	n, err := io.Copy(io.Discard, obj)
-	if err != nil {
-		return 0, err
-	}
-	return n, nil
 }
 
 func (c *Client) ListObjects(prefix string) ([]ObjectInfo, error) {

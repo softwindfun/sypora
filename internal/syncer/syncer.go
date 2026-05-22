@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"sypora/internal/config"
-	"sypora/internal/s3client"
 	"sypora/internal/store"
 )
 
@@ -21,16 +20,17 @@ type Status struct {
 
 type Syncer struct {
 	cfg    *config.Config
-	s3c    *s3client.Client
+	s3c    SyncerS3
 	store  *store.Store
 	status Status
 	mu     sync.RWMutex
 
 	eventCh chan struct{} // triggers a full sync
 	stopCh  chan struct{}
+	once    sync.Once     // guards Start
 }
 
-func New(cfg *config.Config, s3c *s3client.Client, st *store.Store) *Syncer {
+func New(cfg *config.Config, s3c SyncerS3, st *store.Store) *Syncer {
 	return &Syncer{
 		cfg:     cfg,
 		s3c:     s3c,
@@ -55,7 +55,9 @@ func (s *Syncer) TriggerSync() {
 }
 
 func (s *Syncer) Start() {
-	go s.loop()
+	s.once.Do(func() {
+		go s.loop()
+	})
 }
 
 func (s *Syncer) Stop() {

@@ -22,7 +22,16 @@ type Plan struct {
 	Actions []SyncAction
 }
 
-func buildPlan(wd config.WorkDir, s3c *s3client.Client, st *store.Store) (*Plan, error) {
+// SyncerS3 describes the S3 operations needed by the sync engine.
+type SyncerS3 interface {
+	ListObjects(prefix string) ([]s3client.ObjectInfo, error)
+	Upload(localPath, remoteKey string) (string, error)
+	Download(remoteKey, localPath string) error
+	DeleteObject(remoteKey string) error
+	ObjectInfo(remoteKey string) (*s3client.ObjectInfo, error)
+}
+
+func buildPlan(wd config.WorkDir, s3c SyncerS3, st *store.Store) (*Plan, error) {
 	plan := &Plan{}
 
 	// Scan local files
@@ -85,7 +94,7 @@ func buildPlan(wd config.WorkDir, s3c *s3client.Client, st *store.Store) (*Plan,
 					Type: "upload", LocalPath: local.FullPath,
 					RemoteKey: fs.RemoteKey, Reason: "new local file",
 				})
-			} else if local.ModTime.After(db.LocalMTime) {
+			} else if truncateTime(local.ModTime).After(truncateTime(db.LocalMTime)) {
 				// Local modified, remote deleted -> re-upload
 				fs := makeFileState(wd.LocalPath, wd.RemotePath, rel, local)
 				plan.Actions = append(plan.Actions, SyncAction{
@@ -113,7 +122,7 @@ func buildPlan(wd config.WorkDir, s3c *s3client.Client, st *store.Store) (*Plan,
 			continue
 		}
 
-		localChanged := local.ModTime.After(db.LocalMTime) || local.Size != db.LocalSize
+		localChanged := truncateTime(local.ModTime).After(truncateTime(db.LocalMTime)) || local.Size != db.LocalSize
 		remoteChanged := remote.ETag != db.RemoteETag || remote.Size != db.RemoteSize
 
 		if localChanged && remoteChanged {
@@ -206,6 +215,10 @@ func makeFileState(localRoot, remotePrefix, relPath string, f localFileInfo) sto
 		LocalMTime: f.ModTime,
 		LocalSize:  f.Size,
 	}
+}
+
+func truncateTime(t time.Time) time.Time {
+	return t.Truncate(time.Second)
 }
 
 func shouldIgnorePath(rel string) bool {

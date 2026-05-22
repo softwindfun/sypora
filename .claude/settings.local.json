@@ -9,7 +9,26 @@
       "Read(//c/Program Files \\(x86\\)/Go/bin/**)",
       "Bash(where.exe go *)",
       "Read(//c/Users/developer/go/bin/**)",
-      "Read(//c/Go/bin/**)"
+      "Read(//c/Go/bin/**)",
+      "Bash(go test *)",
+      "Bash(go build *)",
+      "Bash(go vet *)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(go env *)",
+      "Bash(./sypora.exe)",
+      "Bash(tasklist //FI \"IMAGENAME eq sypora.exe\")",
+      "Bash(go doc *)",
+      "Bash(ls -la *.syso)",
+      "Bash(ls -la *.rc)",
+      "Bash(grep -r \"ldflags\\\\|syso\\\\|rsrc\\\\|goversioninfo\" go.mod scripts/)",
+      "Bash(cat scripts/generate_icon.ps1)",
+      "Bash(go install *)",
+      "Bash(GOPROXY=https://goproxy.cn,direct go install github.com/akavel/rsrc@latest)",
+      "Bash(sed -i 's/bgBrush, _, _ := pGetSysColorBrush.Call\\(uintptr\\(colorBtnFace\\)\\)/brush := appBackgroundBrush\\(\\)/' internal/tray/workdir_form_windows.go)",
+      "Bash(sed -i 's/hbrBackground: syscall.Handle\\(bgBrush\\)/hbrBackground: syscall.Handle\\(brush\\)/' internal/tray/workdir_form_windows.go)",
+      "Bash(/c/Users/developer/go/bin/rsrc -ico assets/icon.ico -o rsrc.syso)",
+      "Bash(git *)"
     ]
   }
 }

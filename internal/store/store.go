@@ -96,9 +96,9 @@ func (s *Store) Upsert(fs FileState) error {
 			remote_size  = excluded.remote_size,
 			sync_time    = excluded.sync_time
 	`, fs.LocalPath, fs.RemoteKey,
-		fs.LocalMTime.Format(time.RFC3339), fs.LocalSize,
-		fs.RemoteETag, fs.RemoteMTime.Format(time.RFC3339), fs.RemoteSize,
-		fs.SyncTime.Format(time.RFC3339))
+		fs.LocalMTime.Truncate(time.Second).Format(time.RFC3339), fs.LocalSize,
+		fs.RemoteETag, fs.RemoteMTime.Truncate(time.Second).Format(time.RFC3339), fs.RemoteSize,
+		fs.SyncTime.Truncate(time.Second).Format(time.RFC3339))
 	return err
 }
 
